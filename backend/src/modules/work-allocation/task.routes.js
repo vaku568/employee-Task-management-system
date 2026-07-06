@@ -34,4 +34,15 @@ router.get(
   taskController.getAllTasks
 );
 
+/*
+==================================
+DOWNLOAD TASK FILE
+==================================
+*/
+
+router.get(
+  "/:id/file",
+  taskController.downloadTaskFile
+);
+
 module.exports = router;

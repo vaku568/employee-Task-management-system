@@ -1,5 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
+const path = require("path");
 
 const connectDB = require("./src/config/db");
 
@@ -42,13 +44,35 @@ const reportRoutes =
 const notificationRoutes =
   require("./src/modules/notifications/notification.routes");
 
+const taskChatRoutes =
+require("./src/modules/task-chat/task-chat.routes");
+
 dotenv.config();
 
 connectDB();
 
 const app = express();
 
+/*
+====================================
+CORS CONFIGURATION
+====================================
+*/
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true
+  })
+);
+
 app.use(express.json());
+app.use(
+  "/uploads",
+  express.static(
+    path.join(__dirname, "uploads")
+  )
+);
 
 app.use("/api/auth", authRoutes);
 
@@ -71,20 +95,9 @@ app.use(
   solutionRoutes
 );
 
-app.get("/", (req, res) => {
-  res.send(
-    "Employee Task Management System API Running"
-  );
-});
-
 app.use(
   "/api/rework",
   reworkRoutes
-);
-
-app.use(
-  "/api/dashboard",
-  dashboardRoutes
 );
 
 app.use(
@@ -115,6 +128,17 @@ app.use(
 app.use(
   "/api/notifications",
   notificationRoutes
+);
+
+app.get("/", (req, res) => {
+  res.send(
+    "Employee Task Management System API Running"
+  );
+});
+
+app.use(
+  "/api/task-chat",
+  taskChatRoutes
 );
 
 const PORT =

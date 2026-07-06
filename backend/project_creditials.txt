@@ -1,12 +1,5 @@
-Team_lead
+Email:
+teamlead.sandspace@gmail.com
 
-{
-  "email": "teamlead@gmail.com",
-  "password": "YOUR_PASSWORD"
-}
-
-{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMmMyMGE3YWQ2NjU0ZDg2NTc0MGJhMyIsInJvbGUiOiJURUFNX0xFQUQiLCJpYXQiOjE3ODE1ODU2ODIsImV4cCI6MTc4MjE5MDQ4Mn0.33a4Z2O7U4YrK5ha_D4f_M4_efe9xXgS9cp5Sk71vgI","user":{"_id":"6a2c20a7ad6654d865740ba3","name":"Team Lead","email":"teamlead@gmail.com","password":"$2b$10$.Y08m0mFaEog8lwJR.Hpx.oZ17hKvkGV8U1dvIUNQ28sqqsTCNhm.","employeeId":"TL001","qualification":"MCA","role":"TEAM_LEAD","team":"ML"}}
-
-Employee_JWT 
-
-{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMmMzMmY2MjczNGY1YjdhNDM2MjdkNyIsInJvbGUiOiJFTVBMT1lFRSIsImlhdCI6MTc4MTU4NTc5OCwiZXhwIjoxNzgyMTkwNTk4fQ.qx3Ay2T3CqTO4mpk0CgLkogt4dje2EymAvU-duXZyoM","user":{"_id":"6a2c32f62734f5b7a43627d7","name":"Employee One","email":"employee1@gmail.com","password":"$2b$10$T8ioywqYAf3XicNtWFuYGOXpDWMulODhJmnAejb2BFTADRYTz/rn6","employeeId":"EMP001","qualification":"E.Tech","role":"EMPLOYEE","team":"DB","createdAt":"2026-06-12T16:25:26.571Z","updatedAt":"2026-06-13T07:54:55.938Z","__v":0}}
+Password:
+admin123

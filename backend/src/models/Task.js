@@ -22,9 +22,14 @@ const taskSchema = new mongoose.Schema(
       required: true
     },
 
-    additionalNotes: {
-      type: String
+  additionalNotes: {
+    type: String
     },
+
+  employeeRemarks: {
+    type: String,
+    default: ""
+},
 
     assignedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -41,6 +46,17 @@ const taskSchema = new mongoose.Schema(
     uploadedFile: {
       type: String,
       default: ""
+    },
+
+    uploadedFiles: [
+      {
+        type: String
+      }
+    ],
+
+    parentTaskId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Task"
     },
 
     status: {

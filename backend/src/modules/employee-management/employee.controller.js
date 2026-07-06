@@ -1,114 +1,178 @@
-const { validationResult } = require("express-validator");
+const { validationResult } =
+  require("express-validator");
 
-const employeeService = require("./employee.service");
+const employeeService =
+  require("./employee.service");
 
-const createEmployee = async (req, res) => {
-  try {
+const createEmployee =
+  async (req, res) => {
 
-    const errors = validationResult(req);
+    try {
 
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        errors: errors.array()
+      const errors =
+        validationResult(req);
+
+      if (!errors.isEmpty()) {
+
+        return res.status(400).json({
+          errors:
+            errors.array()
+        });
+
+      }
+
+      const employee =
+        await employeeService.createEmployee(
+          req.body
+        );
+
+      res.status(201).json({
+        message:
+          "Account created successfully. Waiting for Team Lead approval.",
+        employee
       });
+
+    } catch (error) {
+
+      res.status(400).json({
+        message:
+          error.message
+      });
+
     }
 
-    const employee =
-      await employeeService.createEmployee(
-        req.body
+  };
+
+const getAllEmployees =
+  async (req, res) => {
+
+    try {
+
+      const employees =
+        await employeeService.getAllEmployees();
+
+      res.status(200).json(
+        employees
       );
 
-    res.status(201).json(employee);
+    } catch (error) {
 
-  } catch (error) {
+      res.status(500).json({
+        message:
+          error.message
+      });
 
-    res.status(400).json({
-      message: error.message
-    });
+    }
 
-  }
-};
+  };
 
-const getAllEmployees = async (req, res) => {
-  try {
+const getPendingEmployees =
+  async (req, res) => {
 
-    const employees =
-      await employeeService.getAllEmployees();
+    try {
 
-    res.status(200).json(employees);
+      const employees =
+        await employeeService.getPendingEmployees();
 
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
-  }
-};
-
-const getEmployeeById = async (req, res) => {
-  try {
-
-    const employee =
-      await employeeService.getEmployeeById(
-        req.params.id
+      res.status(200).json(
+        employees
       );
 
-    res.status(200).json(employee);
+    } catch (error) {
 
-  } catch (error) {
+      res.status(500).json({
+        message:
+          error.message
+      });
 
-    res.status(404).json({
-      message: error.message
-    });
+    }
 
-  }
-};
+  };
 
-const updateEmployee = async (req, res) => {
-  try {
+const getEmployeeById =
+  async (req, res) => {
 
-    const employee =
-      await employeeService.updateEmployee(
-        req.params.id,
-        req.body
+    try {
+
+      const employee =
+        await employeeService.getEmployeeById(
+          req.params.id
+        );
+
+      res.status(200).json(
+        employee
       );
 
-    res.status(200).json(employee);
+    } catch (error) {
 
-  } catch (error) {
+      res.status(404).json({
+        message:
+          error.message
+      });
 
-    res.status(400).json({
-      message: error.message
-    });
+    }
 
-  }
-};
+  };
 
-const deleteEmployee = async (req, res) => {
-  try {
+const approveEmployee =
+  async (req, res) => {
 
-    await employeeService.deleteEmployee(
-      req.params.id
-    );
+    try {
 
-    res.status(200).json({
-      message: "Employee deleted successfully"
-    });
+      const employee =
+        await employeeService.approveEmployee(
+          req.params.id
+        );
 
-  } catch (error) {
+      res.status(200).json({
+        message:
+          "Employee approved successfully",
+        employee
+      });
 
-    res.status(404).json({
-      message: error.message
-    });
+    } catch (error) {
 
-  }
-};
+      res.status(400).json({
+        message:
+          error.message
+      });
+
+    }
+
+  };
+
+const rejectEmployee =
+  async (req, res) => {
+
+    try {
+
+      const employee =
+        await employeeService.rejectEmployee(
+          req.params.id
+        );
+
+      res.status(200).json({
+        message:
+          "Employee rejected successfully",
+        employee
+      });
+
+    } catch (error) {
+
+      res.status(400).json({
+        message:
+          error.message
+      });
+
+    }
+
+  };
 
 module.exports = {
   createEmployee,
   getAllEmployees,
+  getPendingEmployees,
   getEmployeeById,
-  updateEmployee,
-  deleteEmployee
+  approveEmployee,
+  rejectEmployee
 };

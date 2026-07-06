@@ -4,9 +4,6 @@ const User =
 const Task =
   require("../../models/Task");
 
-const Submission =
-  require("../../models/Submission");
-
 const Solution =
   require("../../models/Solution");
 
@@ -21,8 +18,14 @@ const getTeamLeadDashboard =
     const totalTasks =
       await Task.countDocuments();
 
+    /*
+    ====================================
+    SOLUTION REVIEWS
+    ====================================
+    */
+
     const pendingReviews =
-      await Submission.countDocuments({
+      await Solution.countDocuments({
         reviewStatus: "PENDING"
       });
 
@@ -47,6 +50,7 @@ const getTeamLeadDashboard =
       reworkTasks,
       solutionsCount
     };
+
   };
 
 module.exports = {

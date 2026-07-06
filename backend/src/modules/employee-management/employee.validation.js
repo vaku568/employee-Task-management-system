@@ -1,6 +1,7 @@
 const { body } = require("express-validator");
 
 const createEmployeeValidation = [
+
   body("name")
     .notEmpty()
     .withMessage("Name is required"),
@@ -13,10 +14,6 @@ const createEmployeeValidation = [
     .notEmpty()
     .withMessage("Password is required"),
 
-  body("employeeId")
-    .notEmpty()
-    .withMessage("Employee ID is required"),
-
   body("qualification")
     .notEmpty()
     .withMessage("Qualification is required"),
@@ -24,6 +21,7 @@ const createEmployeeValidation = [
   body("team")
     .notEmpty()
     .withMessage("Team is required")
+
 ];
 
 module.exports = {

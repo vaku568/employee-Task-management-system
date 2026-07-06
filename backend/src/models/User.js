@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema(
 
     employeeId: {
       type: String,
-      required: true,
       unique: true
     },
 
@@ -34,13 +33,32 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["TEAM_LEAD", "EMPLOYEE"],
+      enum: [
+        "TEAM_LEAD",
+        "EMPLOYEE"
+      ],
       required: true
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "PENDING",
+        "APPROVED",
+        "REJECTED"
+      ],
+      default: "PENDING"
     },
 
     team: {
       type: String,
-      enum: ["ML", "DB", "CYBER", "GEN", "WRITING"],
+      enum: [
+        "ML",
+        "DB",
+        "CYBER",
+        "GEN",
+        "WRITING"
+      ],
       required: true
     }
   },
@@ -49,4 +67,8 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports =
+  mongoose.model(
+    "User",
+    userSchema
+  );

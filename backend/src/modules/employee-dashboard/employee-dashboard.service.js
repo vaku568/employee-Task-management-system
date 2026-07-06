@@ -44,8 +44,49 @@ const getEmployeeDashboard =
       approvedSolutions,
       completedTasks
     };
+
+  };
+
+const getAssignedTasks =
+  async (employeeId) => {
+
+    return await Task.find({
+      assignedTo: employeeId
+    })
+      .populate(
+        "assignedBy",
+        "name email"
+      )
+      .sort({
+        createdAt: -1
+      });
+
+  };
+
+/*
+====================================
+ACCEPT TASK
+ASSIGNED -> PROGRESS
+====================================
+*/
+
+const acceptTask =
+  async (taskId) => {
+
+    return await Task.findByIdAndUpdate(
+      taskId,
+      {
+        status: "PROGRESS"
+      },
+      {
+        new: true
+      }
+    );
+
   };
 
 module.exports = {
-  getEmployeeDashboard
+  getEmployeeDashboard,
+  getAssignedTasks,
+  acceptTask
 };

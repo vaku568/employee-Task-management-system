@@ -1,29 +1,36 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
 
   destination: (req, file, cb) => {
 
+    let uploadPath = "uploads/task-files";
+
     if (
-      req.originalUrl.includes(
-        "/api/submissions"
-      )
+      req.originalUrl.includes("/api/submissions")
     ) {
 
-      cb(
-        null,
-        "uploads/submissions"
-      );
+      uploadPath = "uploads/submissions";
 
-    } else {
+    } else if (
+      req.originalUrl.includes("/api/solutions")
+    ) {
 
-      cb(
-        null,
-        "uploads/task-files"
-      );
+      uploadPath = "uploads/solutions";
 
     }
+
+    if (!fs.existsSync(uploadPath)) {
+
+      fs.mkdirSync(uploadPath, {
+        recursive: true
+      });
+
+    }
+
+    cb(null, uploadPath);
 
   },
 
@@ -76,7 +83,8 @@ const fileFilter = (
     cb(
       new Error(
         "Invalid file type"
-      )
+      ),
+      false
     );
 
   }

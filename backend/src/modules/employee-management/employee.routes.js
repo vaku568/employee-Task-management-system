@@ -15,19 +15,36 @@ const {
   createEmployeeValidation
 } = require("./employee.validation");
 
+/*
+====================================
+Employee Registration
+====================================
+*/
+
 router.post(
-  "/",
-  authMiddleware,
-  roleMiddleware("TEAM_LEAD"),
+  "/register",
   createEmployeeValidation,
   employeeController.createEmployee
 );
+
+/*
+====================================
+Team Lead Operations
+====================================
+*/
 
 router.get(
   "/",
   authMiddleware,
   roleMiddleware("TEAM_LEAD"),
   employeeController.getAllEmployees
+);
+
+router.get(
+  "/pending",
+  authMiddleware,
+  roleMiddleware("TEAM_LEAD"),
+  employeeController.getPendingEmployees
 );
 
 router.get(
@@ -38,17 +55,17 @@ router.get(
 );
 
 router.put(
-  "/:id",
+  "/:id/approve",
   authMiddleware,
   roleMiddleware("TEAM_LEAD"),
-  employeeController.updateEmployee
+  employeeController.approveEmployee
 );
 
-router.delete(
-  "/:id",
+router.put(
+  "/:id/reject",
   authMiddleware,
   roleMiddleware("TEAM_LEAD"),
-  employeeController.deleteEmployee
+  employeeController.rejectEmployee
 );
 
 module.exports = router;

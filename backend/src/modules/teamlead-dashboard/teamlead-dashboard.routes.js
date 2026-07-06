@@ -12,7 +12,7 @@ const dashboardController =
   require("./teamlead-dashboard.controller");
 
 router.get(
-  "/team-lead",
+  "/",
   authMiddleware,
   roleMiddleware("TEAM_LEAD"),
   dashboardController.getTeamLeadDashboard

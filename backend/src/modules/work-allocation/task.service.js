@@ -1,6 +1,7 @@
 const Task = require("../../models/Task");
 
 const createTask = async (taskData, teamLeadId) => {
+  console.log("[DEBUG] task.service.createTask", { taskData, teamLeadId });
 
   const task = await Task.create({
     ...taskData,
@@ -8,6 +9,7 @@ const createTask = async (taskData, teamLeadId) => {
     status: "ASSIGNED"
   });
 
+  console.log("[DEBUG] task.service.createTask created", task._id);
   return task;
 };
 
