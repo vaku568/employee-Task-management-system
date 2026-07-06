@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-
 import {
+  Avatar,
+  Box,
+  Chip,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -8,170 +10,93 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  IconButton
+  Tooltip,
+  Typography,
 } from "@mui/material";
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 
-import EmployeeProfile from "./EmployeeProfile";
-import EmployeeForm from "./EmployeeForm";
-import DeleteEmployeeDialog from "./DeleteEmployeeDialog";
-const employees = [
+const getStatusColor = (status) => {
+  switch (status) {
+    case "APPROVED":
+      return "success";
 
-  {
-    id: 1,
-    name: "Rahul Kumar",
-    email: "rahul@gmail.com",
-    team: "ML",
-    qualification: "B.Tech",
-    status: "Active"
-  },
+    case "PENDING":
+      return "warning";
 
-  {
-    id: 2,
-    name: "Priya Sharma",
-    email: "priya@gmail.com",
-    team: "Database",
-    qualification: "MCA",
-    status: "Active"
-  },
+    case "REJECTED":
+      return "error";
 
-  {
-    id: 3,
-    name: "Vijay Kumar",
-    email: "vijay@gmail.com",
-    team: "Cyber",
-    qualification: "B.Sc",
-    status: "Inactive"
-  },
-
-  {
-    id: 4,
-    name: "Meghana",
-    email: "meghana@gmail.com",
-    team: "Writing",
-    qualification: "MBA",
-    status: "Active"
+    default:
+      return "default";
   }
-
-];
-
-const EmployeeTable = () => {
-
-  const [employeeList, setEmployeeList] =
-    useState(employees);
-
-  const [selectedEmployee, setSelectedEmployee] =
-    useState(null);
-
-  const [profileOpen, setProfileOpen] =
-    useState(false);
-
-  const [formOpen, setFormOpen] =
-    useState(false);
-
-  const [deleteOpen, setDeleteOpen] =
-    useState(false);
-
-    const handleView = (employee) => {
-
-  setSelectedEmployee(employee);
-
-  setProfileOpen(true);
-
 };
 
-const handleEdit = (employee) => {
-
-  setSelectedEmployee(employee);
-
-  setFormOpen(true);
-
-};
-
-const handleDelete = (employee) => {
-
-  setSelectedEmployee(employee);
-
-  setDeleteOpen(true);
-
-};
-
-const handleSave = (updatedEmployee) => {
-
-  const updatedEmployees = employeeList.map((emp) =>
-
-    emp.id === updatedEmployee.id
-      ? updatedEmployee
-      : emp
-
-  );
-
-  setEmployeeList(updatedEmployees);
-
-};
-
-const confirmDelete = (employee) => {
-
-  const updatedEmployees = employeeList.filter(
-
-    (emp) => emp.id !== employee.id
-
-  );
-
-  setEmployeeList(updatedEmployees);
-
-};
-
- return (
-
-  <>
-
+const EmployeeTable = ({
+    employees,
+    onApprove,
+    onReject,
+    onView,
+}) => {
+  return (
     <TableContainer
-
       component={Paper}
+      elevation={0}
       sx={{
-        borderRadius: 3
-      }}
-      
-    >
+        background:
+          "rgba(255,255,255,.16)",
 
+        backdropFilter: "blur(18px)",
+
+        WebkitBackdropFilter:
+          "blur(18px)",
+
+        border:
+          "1px solid rgba(255,255,255,.25)",
+
+        borderRadius: "22px",
+
+        overflow: "hidden",
+      }}
+    >
       <Table>
+
+        {/* HEADER */}
 
         <TableHead>
 
           <TableRow
             sx={{
-              background: "#1976D2"
+              bgcolor:
+                "rgba(255,255,255,.18)",
             }}
           >
-
-            <TableCell sx={{ color: "#FFFFFF", fontWeight: 700 }}>
-              Name
+            <TableCell>
+              Employee
             </TableCell>
 
-            <TableCell sx={{ color: "#FFFFFF", fontWeight: 700 }}>
-              Email
+            <TableCell>
+              Employee ID
             </TableCell>
 
-            <TableCell sx={{ color: "#FFFFFF", fontWeight: 700 }}>
+            <TableCell>
               Team
             </TableCell>
 
-            <TableCell sx={{ color: "#FFFFFF", fontWeight: 700 }}>
+            <TableCell>
               Qualification
             </TableCell>
 
-            <TableCell sx={{ color: "#FFFFFF", fontWeight: 700 }}>
+            <TableCell>
               Status
             </TableCell>
 
             <TableCell
               align="center"
-              sx={{ color: "#FFFFFF", fontWeight: 700 }}
             >
               Actions
             </TableCell>
@@ -180,121 +105,229 @@ const confirmDelete = (employee) => {
 
         </TableHead>
 
+        {/* BODY */}
+
         <TableBody>
 
-          {
+          {employees.length === 0 ? (
+            <TableRow>
 
-employeeList.map((employee) => (
-              <TableRow
-                key={employee.id}
-                hover
+              <TableCell
+                colSpan={6}
+                align="center"
               >
+                <Typography
+                  sx={{
+                    py: 5,
+                  }}
+                >
+                  No employees found.
+                </Typography>
 
-                <TableCell>
+              </TableCell>
 
-                  {employee.name}
+            </TableRow>
+          ) : (
+            employees.map(
+              (employee) => (
+                <TableRow
+                  key={
+                    employee._id
+                  }
+                  hover
+                  sx={{
+                    transition:
+                      ".25s",
 
-                </TableCell>
+                    "&:hover": {
+                      bgcolor:
+                        "rgba(37,99,235,.05)",
+                    },
+                  }}
+                >
+                  {/* Employee */}
 
-                <TableCell>
+                  <TableCell>
 
-                  {employee.email}
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap={2}
+                    >
+                      <Avatar
+                        sx={{
+                          bgcolor:
+                            "#2563EB",
+                        }}
+                      >
+                        {employee.name
+                          ?.charAt(0)
+                          .toUpperCase()}
+                      </Avatar>
 
-                </TableCell>
+                      <Box>
 
-                <TableCell>
+                        <Typography
+                          fontWeight={
+                            600
+                          }
+                        >
+                          {
+                            employee.name
+                          }
+                        </Typography>
 
-                  {employee.team}
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                        >
+                          {
+                            employee.email
+                          }
+                        </Typography>
 
-                </TableCell>
+                      </Box>
 
-                <TableCell>
+                    </Box>
 
-                  {employee.qualification}
+                  </TableCell>
 
-                </TableCell>
+                  {/* Employee ID */}
 
-                <TableCell>
+                  <TableCell>
 
-                  <Chip
-
-                    label={employee.status}
-
-                    color={
-                      employee.status === "Active"
-                        ? "success"
-                        : "error"
+                    {
+                      employee.employeeId
                     }
 
-                  />
+                  </TableCell>
 
-                </TableCell>
+                  {/* Team */}
 
-                <TableCell align="center">
+                  <TableCell>
+
+                    <Chip
+                      label={
+                        employee.team
+                      }
+                      color="primary"
+                      variant="outlined"
+                    />
+
+                  </TableCell>
+
+                  {/* Qualification */}
+
+                  <TableCell>
+
+                    {
+                      employee.qualification
+                    }
+
+                  </TableCell>
+
+                  {/* Status */}
+
+                  <TableCell>
+
+                    <Chip
+                      label={
+                        employee.status
+                      }
+                      color={getStatusColor(
+                        employee.status
+                      )}
+                    />
+
+                  </TableCell>
+
+                  {/* Actions */}
+
+                  <TableCell
+                    align="center"
+                  >
+                    <Tooltip title="View Profile">
 
                   <IconButton
-  color="primary"
-  onClick={() => handleView(employee)}
+    color="primary"
+    onClick={() => onView(employee)}
 >
-
-  <VisibilityIcon />
-
+    <VisibilityRoundedIcon />
 </IconButton>
 
-<IconButton
-  color="warning"
-  onClick={() => handleEdit(employee)}
->
+                    </Tooltip>
 
-  <EditIcon />
+                    {employee.status ===
+                      "PENDING" && (
+                      <>
+                        <Tooltip title="Approve">
 
-</IconButton>
+                          <IconButton
+                            color="success"
+                            onClick={() =>
+                              onApprove(
+                                employee._id
+                              )
+                            }
+                          >
+                            <CheckCircleRoundedIcon />
 
-<IconButton
-  color="error"
-  onClick={() => handleDelete(employee)}
->
+                          </IconButton>
 
-  <DeleteIcon />
+                        </Tooltip>
 
-</IconButton>
+                        <Tooltip title="Reject">
 
+                          <IconButton
+                            color="error"
+                            onClick={() =>
+                              onReject(
+                                employee._id
+                              )
+                            }
+                          >
+                            <CancelRoundedIcon />
 
-                </TableCell>
+                          </IconButton>
 
-              </TableRow>
+                        </Tooltip>
+                      </>
+                    )}
 
-            ))
+                    <Tooltip title="Edit">
 
-          }
+                      <IconButton
+                        color="primary"
+                      >
+                        <EditRoundedIcon />
+
+                      </IconButton>
+
+                    </Tooltip>
+
+                    <Tooltip title="Delete">
+
+                      <IconButton
+                        color="error"
+                      >
+                        <DeleteRoundedIcon />
+
+                      </IconButton>
+
+                    </Tooltip>
+
+                  </TableCell>
+
+                </TableRow>
+              )
+            )
+          )}
 
         </TableBody>
 
       </Table>
-</TableContainer>
-  <EmployeeProfile
-    open={profileOpen}
-    handleClose={() => setProfileOpen(false)}
-    employee={selectedEmployee}
-  />
-
-  <EmployeeForm
-    open={formOpen}
-    handleClose={() => setFormOpen(false)}
-    employee={selectedEmployee}
-    onSave={handleSave}
-  />
-
-  <DeleteEmployeeDialog
-    open={deleteOpen}
-    handleClose={() => setDeleteOpen(false)}
-    employee={selectedEmployee}
-    onDelete={confirmDelete}
-  />
-</>
-
-);
-
+    </TableContainer>
+  );
 };
 
 export default EmployeeTable;

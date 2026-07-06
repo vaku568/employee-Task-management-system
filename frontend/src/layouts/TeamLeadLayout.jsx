@@ -1,185 +1,97 @@
-import React, { useState } from "react";
+import { Box } from "@mui/material";
 
-import {
-  Box,
-  Toolbar
-} from "@mui/material";
+import GlassSidebar from "../components/layout/GlassSidebar";
 
-import {
-  useNavigate
-} from "react-router-dom";
+const SIDEBAR_WIDTH = 150;
 
-import DashboardSidebar from "../dashboard/DashboardSidebar";
-import DashboardNavbar from "../dashboard/DashboardNavbar";
-
-/* Icons */
-
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import PeopleIcon from "@mui/icons-material/People";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import HistoryIcon from "@mui/icons-material/History";
-import FolderIcon from "@mui/icons-material/Folder";
-import ChatIcon from "@mui/icons-material/Chat";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import SettingsIcon from "@mui/icons-material/Settings";
-
-const TeamLeadLayout = ({
-  children,
-  pageTitle
-}) => {
-
-  const navigate = useNavigate();
-
-  const user =
-    JSON.parse(
-      localStorage.getItem("user")
-    ) || {};
-
-  const [selectedItem, setSelectedItem] =
-    useState(pageTitle);
-
-  const menuItems = [
-
-    {
-      text: "Dashboard",
-      icon: <DashboardIcon />,
-      path: "/teamlead-dashboard"
-    },
-
-    {
-      text: "Employees",
-      icon: <PeopleIcon />,
-      path: "/teamlead/employees"
-    },
-
-    {
-      text: "Work Allocation",
-      icon: <AssignmentIcon />,
-      path: "/teamlead/work-allocation"
-    },
-
-    {
-      text: "Assigned History",
-      icon: <HistoryIcon />,
-      path: "/teamlead/assigned-history"
-    },
-
-    {
-      text: "Approvals",
-      icon: <AssignmentTurnedInIcon />,
-      path: "/teamlead/approvals"
-    },
-
-    {
-      text: "Repository",
-      icon: <FolderIcon />,
-      path: "/teamlead/repository"
-    },
-
-    {
-      text: "Chats",
-      icon: <ChatIcon />,
-      path: "/teamlead/chats"
-    },
-
-    {
-      text: "Notifications",
-      icon: <NotificationsIcon />,
-      path: "/teamlead/notifications"
-    },
-
-    {
-      text: "Reports",
-      icon: <BarChartIcon />,
-      path: "/teamlead/reports"
-    },
-
-    {
-      text: "Settings",
-      icon: <SettingsIcon />,
-      path: "/teamlead/settings"
-    }
-
-  ];
-
-  const handleSelect = (item) => {
-
-    setSelectedItem(item.text);
-
-    navigate(item.path);
-
-  };
-
-  const handleLogout = () => {
-
-    localStorage.clear();
-
-    navigate("/");
-
-  };
-
+const TeamLeadLayout = ({ children }) => {
   return (
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        width: "100%",
+        overflow: "hidden",
+        position: "relative",
 
-    <Box sx={{ display: "flex" }}>
+        backgroundImage: "url('/office-bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
 
-      <DashboardSidebar
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(135deg, rgba(8,20,48,.88), rgba(17,40,92,.82), rgba(18,74,148,.78))",
+          zIndex: 0,
+        },
+      }}
+    >
+      {/* Sidebar */}
 
-        title="Team Lead Portal"
+      <GlassSidebar />
 
-        logo="/logos/company_logos.png"
-
-        menuItems={menuItems}
-
-        selectedItem={selectedItem}
-
-        onSelect={handleSelect}
-
-        onLogout={handleLogout}
-
-      />
+      {/* Main Content */}
 
       <Box
-
-        component="main"
-
         sx={{
+          flex: 1,
 
-          flexGrow: 1,
+          ml: `${SIDEBAR_WIDTH}px`,
 
-          background: "#F5F8FC",
+          position: "relative",
 
-          minHeight: "100vh"
+          zIndex: 1,
 
+          minHeight: "100vh",
+
+          display: "flex",
+
+          flexDirection: "column",
+
+          overflow: "hidden",
         }}
-
       >
+        {/* Page Content */}
 
-        <DashboardNavbar
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
 
-          title={pageTitle}
+            overflowY: "auto",
 
-          user={user}
+            overflowX: "hidden",
 
-          notificationCount={8}
+            display: "flex",
 
-        />
+            justifyContent: "center",
 
-        <Toolbar />
+            alignItems: "flex-start",
 
-        <Box sx={{ p: 3 }}>
+            px: 3,
 
-          {children}
+            py: 4,
+          }}
+        >
+          <Box
+            sx={{
+              width: "100%",
 
+              maxWidth: "1450px",
+
+              mx: "auto",
+            }}
+          >
+            {children}
+          </Box>
         </Box>
-
       </Box>
-
     </Box>
-
   );
-
 };
 
 export default TeamLeadLayout;

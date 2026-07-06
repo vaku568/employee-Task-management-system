@@ -1,120 +1,248 @@
-import React from "react";
-
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Button,
   Avatar,
+  Box,
+  Chip,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
   Grid,
-  Divider
+  IconButton,
+  Typography,
 } from "@mui/material";
 
-import PersonIcon from "@mui/icons-material/Person";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
+import BadgeRoundedIcon from "@mui/icons-material/BadgeRounded";
+import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
+import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+
+const statusColor = (status) => {
+  switch (status) {
+    case "APPROVED":
+      return "success";
+
+    case "PENDING":
+      return "warning";
+
+    case "REJECTED":
+      return "error";
+
+    default:
+      return "default";
+  }
+};
+
+const DetailItem = ({
+  icon,
+  label,
+  value,
+}) => (
+  <Grid
+    item
+    xs={12}
+    md={6}
+  >
+    <Box
+      sx={{
+        display: "flex",
+        gap: 2,
+        alignItems: "center",
+        p: 2,
+        borderRadius: "14px",
+        bgcolor: "rgba(255,255,255,.35)",
+      }}
+    >
+      <Box color="primary.main">
+        {icon}
+      </Box>
+
+      <Box>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+        >
+          {label}
+        </Typography>
+
+        <Typography
+          fontWeight={600}
+        >
+          {value || "-"}
+        </Typography>
+      </Box>
+    </Box>
+  </Grid>
+);
 
 const EmployeeProfile = ({
   open,
-  handleClose,
-  employee
+  employee,
+  onClose,
 }) => {
-
   if (!employee) return null;
 
   return (
-
     <Dialog
       open={open}
-      onClose={handleClose}
-      maxWidth="sm"
+      onClose={onClose}
       fullWidth
+      maxWidth="md"
+      PaperProps={{
+        sx: {
+          borderRadius: "24px",
+
+          background:
+            "rgba(255,255,255,.18)",
+
+          backdropFilter:
+            "blur(25px)",
+
+          border:
+            "1px solid rgba(255,255,255,.25)",
+
+          overflow: "hidden",
+        },
+      }}
     >
+      {/* Header */}
 
-      <DialogTitle>
+      <DialogTitle
+        sx={{
+          pb: 1,
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography
+            variant="h5"
+            fontWeight={700}
+          >
+            Employee Profile
+          </Typography>
 
-        Employee Profile
-
+          <IconButton
+            onClick={onClose}
+          >
+            <CloseRoundedIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
+      <Divider />
+
       <DialogContent>
+        {/* Profile */}
+
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          mb={4}
+        >
+          <Avatar
+            sx={{
+              width: 90,
+              height: 90,
+              bgcolor: "#2563EB",
+              fontSize: 36,
+              fontWeight: 700,
+              mb: 2,
+            }}
+          >
+            {employee.name
+              ?.charAt(0)
+              .toUpperCase()}
+          </Avatar>
+
+          <Typography
+            variant="h5"
+            fontWeight={700}
+          >
+            {employee.name}
+          </Typography>
+
+          <Typography
+            color="text.secondary"
+          >
+            {employee.email}
+          </Typography>
+
+          <Chip
+            sx={{ mt: 2 }}
+            color={statusColor(employee.status)}
+            label={employee.status}
+          />
+        </Box>
+
+        {/* Details */}
 
         <Grid
           container
-          spacing={3}
-          justifyContent="center"
+          spacing={2}
         >
+          <DetailItem
+            icon={<BadgeRoundedIcon />}
+            label="Employee ID"
+            value={employee.employeeId}
+          />
 
-          <Grid
-            item
-            xs={12}
-            textAlign="center"
-          >
+          <DetailItem
+            icon={<EmailRoundedIcon />}
+            label="Email"
+            value={employee.email}
+          />
 
-            <Avatar
-              sx={{
-                width: 90,
-                height: 90,
-                margin: "auto",
-                bgcolor: "#1976D2"
-              }}
-            >
+          <DetailItem
+            icon={<GroupsRoundedIcon />}
+            label="Team"
+            value={employee.team}
+          />
 
-              <PersonIcon
-                sx={{
-                  fontSize: 55
-                }}
-              />
+          <DetailItem
+            icon={<SchoolRoundedIcon />}
+            label="Qualification"
+            value={employee.qualification}
+          />
 
-            </Avatar>
+          <DetailItem
+            icon={<PersonRoundedIcon />}
+            label="Role"
+            value={employee.role}
+          />
 
-          </Grid>
+          <DetailItem
+            icon={<CalendarMonthRoundedIcon />}
+            label="Created"
+            value={
+              employee.createdAt
+                ? new Date(
+                    employee.createdAt
+                  ).toLocaleDateString()
+                : "-"
+            }
+          />
 
-          <Grid item xs={12}>
-
-            <Divider sx={{ mb: 2 }} />
-
-            <Typography>
-              <strong>Name :</strong> {employee.name}
-            </Typography>
-
-            <Typography mt={2}>
-              <strong>Email :</strong> {employee.email}
-            </Typography>
-
-            <Typography mt={2}>
-              <strong>Qualification :</strong> {employee.qualification}
-            </Typography>
-
-            <Typography mt={2}>
-              <strong>Team :</strong> {employee.team}
-            </Typography>
-
-            <Typography mt={2}>
-              <strong>Status :</strong> {employee.status}
-            </Typography>
-
-          </Grid>
-
+          <DetailItem
+            icon={<CalendarMonthRoundedIcon />}
+            label="Updated"
+            value={
+              employee.updatedAt
+                ? new Date(
+                    employee.updatedAt
+                  ).toLocaleDateString()
+                : "-"
+            }
+          />
         </Grid>
-
       </DialogContent>
-
-      <DialogActions>
-
-        <Button
-          onClick={handleClose}
-          variant="contained"
-        >
-          Close
-        </Button>
-
-      </DialogActions>
-
     </Dialog>
-
   );
-
 };
 
 export default EmployeeProfile;

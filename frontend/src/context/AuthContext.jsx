@@ -1,24 +1,23 @@
 import { createContext, useState } from "react";
 
-export const AuthContext =
-  createContext();
+export const AuthContext = createContext();
 
-export const AuthProvider = ({
-  children
-}) => {
+export const AuthProvider = ({ children }) => {
+  // Restore user after page refresh
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
 
-  const [user, setUser] =
-    useState(null);
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Failed to parse stored user:", error);
+      return null;
+    }
+  });
 
-  const login = (
-    token,
-    userData
-  ) => {
-
-    localStorage.setItem(
-      "token",
-      token
-    );
+  // Login
+  const login = (token, userData) => {
+    localStorage.setItem("token", token);
 
     localStorage.setItem(
       "user",
@@ -28,15 +27,10 @@ export const AuthProvider = ({
     setUser(userData);
   };
 
+  // Logout
   const logout = () => {
-
-    localStorage.removeItem(
-      "token"
-    );
-
-    localStorage.removeItem(
-      "user"
-    );
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
     setUser(null);
   };
@@ -46,7 +40,7 @@ export const AuthProvider = ({
       value={{
         user,
         login,
-        logout
+        logout,
       }}
     >
       {children}
