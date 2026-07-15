@@ -1,239 +1,97 @@
-import React, { useState } from "react";
+import { Box } from "@mui/material";
 
-import {
-  Box,
-  Toolbar
-} from "@mui/material";
+import GlassSidebar from "../components/layout/GlassSidebar";
 
-import {
-  useNavigate
-} from "react-router-dom";
+const SIDEBAR_WIDTH = 150;
 
-import DashboardSidebar from "../dashboard/DashboardSidebar";
-import DashboardNavbar from "../dashboard/DashboardNavbar";
+const EmployeeLayout = ({ children }) => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        width: "100%",
+        overflow: "hidden",
+        position: "relative",
 
-/* Icons */
+        backgroundImage: "url('/office-bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
 
-import DashboardIcon from "@mui/icons-material/Dashboard";
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(135deg, rgba(8,20,48,.88), rgba(17,40,92,.82), rgba(18,74,148,.78))",
+          zIndex: 0,
+        },
+      }}
+    >
+      {/* Sidebar */}
 
-import AssignmentIcon from "@mui/icons-material/Assignment";
+      <GlassSidebar role="EMPLOYEE" />
 
-import UploadFileIcon from "@mui/icons-material/UploadFile";
+      {/* Main Content */}
 
-import HistoryIcon from "@mui/icons-material/History";
+      <Box
+        sx={{
+          flex: 1,
 
-import FolderIcon from "@mui/icons-material/Folder";
+          ml: `${SIDEBAR_WIDTH}px`,
 
-import ChatIcon from "@mui/icons-material/Chat";
+          position: "relative",
 
-import NotificationsIcon from "@mui/icons-material/Notifications";
+          zIndex: 1,
 
-import BarChartIcon from "@mui/icons-material/BarChart";
+          minHeight: "100vh",
 
-import SettingsIcon from "@mui/icons-material/Settings";
+          display: "flex",
 
-const EmployeeLayout = ({
+          flexDirection: "column",
 
-children,
+          overflow: "hidden",
+        }}
+      >
+        {/* Page Content */}
 
-pageTitle
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
 
-}) => {
+            overflowY: "auto",
 
-const navigate = useNavigate();
+            overflowX: "hidden",
 
-const user =
+            display: "flex",
 
-JSON.parse(
+            justifyContent: "center",
 
-localStorage.getItem("user")
+            alignItems: "flex-start",
 
-) || {};
+            px: 3,
 
-const [selectedItem,
+            py: 4,
+          }}
+        >
+          <Box
+            sx={{
+              width: "100%",
 
-setSelectedItem] =
+              maxWidth: "1450px",
 
-useState(pageTitle);
-
-const menuItems = [
-
-{
-
-text:"Dashboard",
-
-icon:<DashboardIcon/>,
-
-path:"/employee-dashboard"
-
-},
-
-{
-
-text:"My Tasks",
-
-icon:<AssignmentIcon/>,
-
-path:"/employee/tasks"
-
-},
-
-{
-
-text:"Submit Solution",
-
-icon:<UploadFileIcon/>,
-
-path:"/employee/submit"
-
-},
-
-{
-
-text:"Submission History",
-
-icon:<HistoryIcon/>,
-
-path:"/employee/history"
-
-},
-
-{
-
-text:"Repository",
-
-icon:<FolderIcon/>,
-
-path:"/employee/repository"
-
-},
-
-{
-
-text:"Chats",
-
-icon:<ChatIcon/>,
-
-path:"/employee/chats"
-
-},
-
-{
-
-text:"Notifications",
-
-icon:<NotificationsIcon/>,
-
-path:"/employee/notifications"
-
-},
-
-{
-
-text:"Reports",
-
-icon:<BarChartIcon/>,
-
-path:"/employee/reports"
-
-},
-
-{
-
-text:"Settings",
-
-icon:<SettingsIcon/>,
-
-path:"/employee/settings"
-
-}
-
-];
-
-const handleSelect=(item)=>{
-
-setSelectedItem(item.text);
-
-navigate(item.path);
-
-};
-
-const handleLogout=()=>{
-
-localStorage.clear();
-
-navigate("/");
-
-};
-
-return(
-
-<Box sx={{display:"flex"}}>
-
-<DashboardSidebar
-
-title="Employee Portal"
-
-logo="/logos/company_logos.png"
-
-menuItems={menuItems}
-
-selectedItem={selectedItem}
-
-onSelect={handleSelect}
-
-onLogout={handleLogout}
-
-/>
-
-<Box
-
-component="main"
-
-sx={{
-
-flexGrow:1,
-
-background:"#F5F8FC",
-
-minHeight:"100vh"
-
-}}
-
->
-
-<DashboardNavbar
-
-title={pageTitle}
-
-user={user}
-
-notificationCount={5}
-
-/>
-
-<Toolbar/>
-
-<Box
-
-sx={{
-
-p:3
-
-}}
-
->
-
-{children}
-
-</Box>
-
-</Box>
-
-</Box>
-
-);
-
+              mx: "auto",
+            }}
+          >
+            {children}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
 };
 
 export default EmployeeLayout;

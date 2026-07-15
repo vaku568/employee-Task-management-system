@@ -15,7 +15,6 @@ import ProfileMenu from "./ProfileMenu";
 const GlassNavbar = ({
   title = "Dashboard",
   subtitle = "Employee Task Management System",
-  notificationCount = 0,
 }) => {
   return (
     <AppBar
@@ -189,9 +188,7 @@ const GlassNavbar = ({
                 </Typography>
               </Box>
 
-              <NotificationBell
-                count={notificationCount}
-              />
+              <NotificationBell />
 
               <ProfileMenu />
             </Box>

@@ -25,4 +25,11 @@ router.get(
   employeeTaskController.downloadTask
 );
 
+router.put(
+  "/:taskId/accept",
+  authMiddleware,
+  roleMiddleware("EMPLOYEE"),
+  employeeTaskController.acceptTask
+);
+
 module.exports = router;

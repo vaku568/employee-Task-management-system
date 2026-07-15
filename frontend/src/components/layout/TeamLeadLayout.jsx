@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import Sidebar from "../components/layout/Sidebar";
-import Navbar from "../components/layout/Navbar";
 
 const drawerWidth = 300;
 
@@ -27,9 +26,6 @@ const TeamLeadLayout = ({ children }) => {
           minHeight: "100vh",
         }}
       >
-        {/* Top Navbar */}
-        <Navbar />
-
         {/* Page Content */}
         <Box
           component="main"

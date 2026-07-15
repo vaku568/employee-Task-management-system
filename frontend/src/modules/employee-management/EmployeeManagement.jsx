@@ -17,8 +17,13 @@ import EmployeeStats from "./EmployeeStats";
 import EmployeeToolbar from "./EmployeeToolbar";
 import EmployeeTable from "./EmployeeTable";
 import EmployeeProfile from "./EmployeeProfile";
+import AddEmployeeDialog from "./AddEmployeeDialog";
+import EditEmployeeDialog from "./EditEmployeeDialog";
+import DeleteEmployeeDialog from "./DeleteEmployeeDialog";
+import { useAuth } from "../../hooks/useAuth";
 
 const EmployeeManagement = () => {
+  const { user } = useAuth();
   const [employees, setEmployees] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -41,6 +46,14 @@ const EmployeeManagement = () => {
     const [profileOpen, setProfileOpen] = useState(false);
 
 const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editEmployee, setEditEmployee] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteEmployee, setDeleteEmployee] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   //----------------------------------------------------
   // Fetch Employees
@@ -102,6 +115,60 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
     }
   };
 
+  const handleAddEmployeeSuccess = () => {
+    setSnackbar({
+      open: true,
+      severity: "success",
+      message: "Employee added successfully.",
+    });
+    fetchEmployees();
+  };
+
+  const handleEditEmployee = (employee) => {
+    setEditEmployee(employee);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditEmployeeSuccess = () => {
+    setSnackbar({
+      open: true,
+      severity: "success",
+      message: "Employee updated successfully.",
+    });
+    fetchEmployees();
+  };
+
+  const handleDeleteEmployee = (employee) => {
+    setDeleteEmployee(employee);
+    setDeleteError("");
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteEmployee = async (employee) => {
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await axiosInstance.delete(`/employees/${employee._id}`);
+
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Employee deleted successfully.",
+      });
+
+      setDeleteDialogOpen(false);
+      fetchEmployees();
+    } catch (err) {
+      console.error("Delete employee error:", err);
+      setDeleteError(
+        err?.response?.data?.message ||
+          "Cannot delete employee because active records exist."
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   //----------------------------------------------------
   // Reject
   //----------------------------------------------------
@@ -137,13 +204,13 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const filteredEmployees =
     employees.filter((emp) => {
+      const searchLower = searchText.toLowerCase();
       const matchesSearch =
-        emp.name
-          .toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        emp.employeeId
-          ?.toLowerCase()
-          .includes(searchText.toLowerCase());
+        emp.name?.toLowerCase().includes(searchLower) ||
+        emp.employeeId?.toLowerCase().includes(searchLower) ||
+        emp.email?.toLowerCase().includes(searchLower) ||
+        emp.team?.toLowerCase().includes(searchLower) ||
+        emp.qualification?.toLowerCase().includes(searchLower);
 
       const matchesTeam =
         teamFilter === "ALL" ||
@@ -152,7 +219,6 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
       const matchesStatus =
         statusFilter === "ALL" ||
         emp.status === statusFilter;
- 
 
       return (
         matchesSearch &&
@@ -160,6 +226,11 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
         matchesStatus
       );
     });
+
+  // Get distinct teams for filter dropdown
+  const distinctTeams = [
+    ...new Set(employees.map((emp) => emp.team).filter(Boolean)),
+  ].sort();
 
          //----------------------------------------------------
 // View Employee
@@ -198,32 +269,23 @@ const handleCloseProfile = () => {
     statusFilter={statusFilter}
     setStatusFilter={setStatusFilter}
     onRefresh={fetchEmployees}
-    onAddEmployee={() =>
-      console.log("Open Employee Form")
-    }
+    onAddEmployee={() => setAddDialogOpen(true)}
+    teams={distinctTeams}
 />
 
         <Box mt={3}>
 
-          {loading ? (
-            <Box
-              sx={{
-                py: 10,
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <CircularProgress />
-            </Box>
-          ) : (
            <EmployeeTable
     employees={filteredEmployees}
     onApprove={approveEmployee}
     onReject={rejectEmployee}
     onView={handleViewEmployee}
+    onEdit={handleEditEmployee}
+    onDelete={handleDeleteEmployee}
+    currentUserId={user?._id}
+    onRefresh={fetchEmployees}
+    loading={loading}
 />
-
-          )}
 
         </Box>
 
@@ -233,6 +295,30 @@ const handleCloseProfile = () => {
     employee={selectedEmployee}
     onClose={handleCloseProfile}
 />
+
+      <AddEmployeeDialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
+        onSuccess={handleAddEmployeeSuccess}
+        teams={distinctTeams}
+      />
+
+      <EditEmployeeDialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        onSuccess={handleEditEmployeeSuccess}
+        employee={editEmployee}
+        teams={distinctTeams}
+      />
+
+      <DeleteEmployeeDialog
+        open={deleteDialogOpen}
+        handleClose={() => setDeleteDialogOpen(false)}
+        employee={deleteEmployee}
+        onDelete={confirmDeleteEmployee}
+        loading={deleting}
+        error={deleteError}
+      />
 
       <Snackbar
         open={snackbar.open}

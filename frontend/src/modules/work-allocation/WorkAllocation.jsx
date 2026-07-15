@@ -89,15 +89,9 @@ const WorkAllocation = () => {
       setLoading(true);
 
       const res =
-        await axiosInstance.get("/employees");
+        await axiosInstance.get("/employees/approved");
 
-      const approved =
-        res.data.filter(
-          (emp) =>
-            emp.status === "APPROVED"
-        );
-
-      setEmployees(approved);
+      setEmployees(res.data);
     } catch (error) {
       console.log(error);
 

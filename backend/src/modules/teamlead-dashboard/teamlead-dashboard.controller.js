@@ -6,8 +6,9 @@ const getTeamLeadDashboard =
 
     try {
 
+      const teamLeadId = req.user.id;
       const dashboard =
-        await dashboardService.getTeamLeadDashboard();
+        await dashboardService.getTeamLeadDashboard(teamLeadId);
 
       res.status(200).json(
         dashboard

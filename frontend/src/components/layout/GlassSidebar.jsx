@@ -4,19 +4,72 @@ import {
   Divider,
   Button,
   Avatar,
+  Snackbar,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
+import { useState } from "react";
 
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 
-import { teamLeadMenus } from "../../utils/menuConfig";
+import { teamLeadMenus, employeeMenus } from "../../utils/menuConfig";
 import SidebarItem from "./SidebarItem";
 
 import { useAuth } from "../../hooks/useAuth";
+import { useChatUnread } from "../../contexts/ChatUnreadContext";
+import { useNotification } from "../../contexts/NotificationContext";
+import { useNavigate } from "react-router-dom";
+import ProfileDialog from "./ProfileDialog";
 
 const drawerWidth = 300;
 
-const GlassSidebar = () => {
+const GlassSidebar = ({ role = "TEAM_LEAD" }) => {
   const { logout, user } = useAuth();
+  const { totalUnread } = useChatUnread();
+  const { unreadCount } = useNotification();
+  const navigate = useNavigate();
+
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const menus = role === "TEAM_LEAD" ? teamLeadMenus : employeeMenus;
+  const roleLabel = role === "TEAM_LEAD" ? "TEAM LEAD" : "EMPLOYEE";
+  const roleColor = role === "TEAM_LEAD" ? "#42A5F5" : "#43A047";
+
+  // Update chat badge with unread count
+  const updatedMenus = menus.map(menu => {
+    if (menu.id === "chat" || menu.id === "team-chat") {
+      return { ...menu, badge: totalUnread > 0 ? totalUnread : null };
+    }
+    if (menu.id === "notifications") {
+      return { ...menu, badge: unreadCount > 0 ? unreadCount : null };
+    }
+    return menu;
+  });
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    
+    // Perform logout cleanup
+    logout();
+    
+    // Show success message
+    setSnackbar({
+      open: true,
+      message: "Logged out successfully.",
+      severity: "success",
+    });
+    
+    // Wait for snackbar to show and then redirect
+    setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 500);
+  };
 
   return (
     <Box
@@ -112,11 +165,16 @@ const GlassSidebar = () => {
           alignItems: "center",
 
           gap: 2,
+          cursor: "pointer",
+          "&:hover": {
+            bgcolor: "rgba(255, 255, 255, 0.05)",
+          },
         }}
+        onClick={() => setProfileDialogOpen(true)}
       >
         <Avatar
           sx={{
-            bgcolor: "#42A5F5",
+            bgcolor: roleColor,
           }}
         >
           {user?.name?.charAt(0)?.toUpperCase() || "T"}
@@ -130,7 +188,7 @@ const GlassSidebar = () => {
               fontSize: 15,
             }}
           >
-            {user?.name || "Team Lead"}
+            {user?.name || "User"}
           </Typography>
 
           <Typography
@@ -139,7 +197,7 @@ const GlassSidebar = () => {
               fontSize: 12,
             }}
           >
-            TEAM LEAD
+            {roleLabel}
           </Typography>
         </Box>
       </Box>
@@ -172,7 +230,7 @@ const GlassSidebar = () => {
           },
         }}
       >
-        {teamLeadMenus.map((menu) => (
+        {updatedMenus.map((menu) => (
           <SidebarItem
             key={menu.id}
             item={menu}
@@ -198,10 +256,11 @@ const GlassSidebar = () => {
 
         <Button
           fullWidth
-          startIcon={<LogoutRoundedIcon />}
+          startIcon={isLoggingOut ? <CircularProgress size={20} color="inherit" /> : <LogoutRoundedIcon />}
           variant="contained"
           color="error"
-          onClick={logout}
+          onClick={handleLogout}
+          disabled={isLoggingOut}
           sx={{
             py: 1.4,
 
@@ -220,9 +279,27 @@ const GlassSidebar = () => {
             },
           }}
         >
-          Logout
+          {isLoggingOut ? "Logging out..." : "Logout"}
         </Button>
       </Box>
+
+      {/* Snackbar for logout feedback */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity={snackbar.severity} sx={{ minWidth: 300 }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Profile Dialog */}
+      <ProfileDialog
+        open={profileDialogOpen}
+        onClose={() => setProfileDialogOpen(false)}
+      />
     </Box>
   );
 };

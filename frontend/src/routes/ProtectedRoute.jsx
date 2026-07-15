@@ -1,40 +1,48 @@
 import { Navigate }
 from "react-router-dom";
 
+import { useAuth } from "../hooks/useAuth";
+
 const ProtectedRoute = ({
   children,
   role
 }) => {
 
-  const token =
-    localStorage.getItem(
-      "token"
-    );
+  const { user, token, loading } = useAuth();
 
-  const user =
-    JSON.parse(
-      localStorage.getItem(
-        "user"
-      )
-    );
+  if (loading) {
+    return null; // or loading spinner
+  }
 
-  if (!token) {
+  if (!token || !user) {
     return (
       <Navigate
-        to="/login"
+        to="/"
+        replace
       />
     );
   }
 
+  // Check role if specified
   if (
     role &&
     user?.role !== role
   ) {
     return (
       <Navigate
-        to="/login"
+        to="/"
+        replace
       />
     );
+  }
+
+  // For employees, check approval status
+  if (user?.role === "EMPLOYEE" && user?.status !== "APPROVED") {
+    if (user?.status === "PENDING") {
+      return <Navigate to="/waiting-for-approval" replace />;
+    } else if (user?.status === "REJECTED") {
+      return <Navigate to="/registration-rejected" replace />;
+    }
   }
 
   return children;

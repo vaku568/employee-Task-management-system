@@ -2,8 +2,10 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
+const http = require("http");
 
 const connectDB = require("./src/config/db");
+const { initializeSocket } = require("./socket/socket");
 
 const authRoutes =
   require("./src/modules/auth/auth.routes");
@@ -41,11 +43,20 @@ const searchFilterRoutes =
 const reportRoutes =
   require("./src/modules/reports/report.routes");
 
+const employeeDailyReportRoutes =
+  require("./src/modules/reports/employee-daily-report.routes");
+
 const notificationRoutes =
   require("./src/modules/notifications/notification.routes");
 
 const taskChatRoutes =
 require("./src/modules/task-chat/task-chat.routes");
+
+const teamChatRoutes =
+require("./src/modules/team-chat/team-chat.routes");
+
+const userRoutes =
+require("./src/modules/user/user.routes");
 
 dotenv.config();
 
@@ -126,6 +137,11 @@ app.use(
 );
 
 app.use(
+  "/api/reports",
+  employeeDailyReportRoutes
+);
+
+app.use(
   "/api/notifications",
   notificationRoutes
 );
@@ -141,10 +157,25 @@ app.use(
   taskChatRoutes
 );
 
+app.use(
+  "/api/team-chat",
+  teamChatRoutes
+);
+
+app.use(
+  "/api/users",
+  userRoutes
+);
+
 const PORT =
   process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+initializeSocket(server);
+
+server.listen(PORT, () => {
   console.log(
     `Server running on port ${PORT}`
   );

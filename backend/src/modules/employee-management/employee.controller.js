@@ -14,9 +14,10 @@ const createEmployee =
 
       if (!errors.isEmpty()) {
 
+        const firstError = errors.array()[0];
         return res.status(400).json({
-          errors:
-            errors.array()
+          message: firstError.msg,
+          errors: errors.array()
         });
 
       }
@@ -34,9 +35,11 @@ const createEmployee =
 
     } catch (error) {
 
+      console.error("Employee registration error:", error);
+
       res.status(400).json({
         message:
-          error.message
+          error.message || "Registration failed"
       });
 
     }
@@ -89,6 +92,29 @@ const getPendingEmployees =
 
   };
 
+const getApprovedEmployees =
+  async (req, res) => {
+
+    try {
+
+      const employees =
+        await employeeService.getApprovedEmployees();
+
+      res.status(200).json(
+        employees
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        message:
+          error.message
+      });
+
+    }
+
+  };
+
 const getEmployeeById =
   async (req, res) => {
 
@@ -121,7 +147,8 @@ const approveEmployee =
 
       const employee =
         await employeeService.approveEmployee(
-          req.params.id
+          req.params.id,
+          req.user.id
         );
 
       res.status(200).json({
@@ -148,7 +175,8 @@ const rejectEmployee =
 
       const employee =
         await employeeService.rejectEmployee(
-          req.params.id
+          req.params.id,
+          req.user.id
         );
 
       res.status(200).json({
@@ -168,11 +196,69 @@ const rejectEmployee =
 
   };
 
+const deleteEmployee =
+  async (req, res) => {
+
+    try {
+
+      const employee =
+        await employeeService.deleteEmployee(
+          req.params.id
+        );
+
+      res.status(200).json({
+        message:
+          "Employee deleted successfully",
+        employee
+      });
+
+    } catch (error) {
+
+      res.status(400).json({
+        message:
+          error.message
+      });
+
+    }
+
+  };
+
+const updateEmployee =
+  async (req, res) => {
+
+    try {
+
+      const employee =
+        await employeeService.updateEmployee(
+          req.params.id,
+          req.body
+        );
+
+      res.status(200).json({
+        message:
+          "Employee updated successfully",
+        employee
+      });
+
+    } catch (error) {
+
+      res.status(400).json({
+        message:
+          error.message
+      });
+
+    }
+
+  };
+
 module.exports = {
   createEmployee,
   getAllEmployees,
   getPendingEmployees,
+  getApprovedEmployees,
   getEmployeeById,
   approveEmployee,
-  rejectEmployee
+  rejectEmployee,
+  deleteEmployee,
+  updateEmployee
 };

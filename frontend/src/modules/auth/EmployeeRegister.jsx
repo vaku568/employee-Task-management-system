@@ -7,7 +7,8 @@ import {
   MenuItem,
   Alert,
   Avatar,
-  InputAdornment
+  InputAdornment,
+  Snackbar
 } from "@mui/material";
 
 import { useState } from "react";
@@ -25,8 +26,6 @@ import { motion } from "framer-motion";
 
 import { Link } from "react-router-dom";
 
-import Navbar from "../../components/layout/Navbar";
-
 import axiosInstance from "../../services/axiosInstance";
 
 const EmployeeRegister = () => {
@@ -42,6 +41,8 @@ const EmployeeRegister = () => {
   const [message, setMessage] = useState("");
 
   const [error, setError] = useState("");
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleChange = (e) => {
 
@@ -65,6 +66,16 @@ const EmployeeRegister = () => {
       );
 
       setMessage(response.data.message);
+      setOpenSnackbar(true);
+
+      // Clear form after successful registration
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        qualification: "",
+        team: ""
+      });
 
     }
 
@@ -74,6 +85,7 @@ const EmployeeRegister = () => {
         err.response?.data?.message ||
         "Registration Failed"
       );
+      setOpenSnackbar(true);
 
     }
 
@@ -110,7 +122,6 @@ const EmployeeRegister = () => {
  return (
 
   <>
-    <Navbar />
 
     <Box
       sx={{
@@ -594,6 +605,21 @@ const EmployeeRegister = () => {
 </Paper>
 
 </Box>
+
+<Snackbar
+  open={openSnackbar}
+  autoHideDuration={6000}
+  onClose={() => setOpenSnackbar(false)}
+  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+>
+  <Alert
+    onClose={() => setOpenSnackbar(false)}
+    severity={error ? "error" : "success"}
+    sx={{ width: "100%" }}
+  >
+    {error || message}
+  </Alert>
+</Snackbar>
 
 </>
 

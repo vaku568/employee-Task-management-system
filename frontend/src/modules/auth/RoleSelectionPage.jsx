@@ -5,8 +5,6 @@ import { useNavigate } from "react-router-dom";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 
-import Navbar from "../../components/layout/Navbar";
-
 import LandingBackground from "../../landing/LandingBackground";
 import HeroSection from "../../landing/HeroSection";
 import RoleCard from "../../landing/RoleCard";
@@ -17,8 +15,6 @@ const RoleSelectionPage = () => {
 
   return (
     <>
-      <Navbar />
-
       <LandingBackground>
 
         <Box

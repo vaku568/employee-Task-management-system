@@ -5,6 +5,8 @@ const comparePassword =
 const generateToken =
   require("../../utils/generateToken");
 
+const mongoose = require("mongoose");
+
 const loginUser = async (
   email,
   password
@@ -81,6 +83,36 @@ const loginUser = async (
 
 };
 
+const getCurrentUser = async (userId) => {
+  try {
+    console.log("[DEBUG] getCurrentUser - userId:", userId);
+    console.log("[DEBUG] getCurrentUser - userId type:", typeof userId);
+    console.log("[DEBUG] getCurrentUser - userId string:", String(userId));
+    
+    // Convert string ID to ObjectId if necessary
+    const objectId = typeof userId === 'string' ? new mongoose.Types.ObjectId(userId) : userId;
+    console.log("[DEBUG] getCurrentUser - objectId:", objectId);
+    console.log("[DEBUG] getCurrentUser - objectId type:", typeof objectId);
+    
+    const user = await User.findById(objectId).select("-password");
+    
+    console.log("[DEBUG] getCurrentUser - user found:", user ? "YES" : "NO");
+    if (user) {
+      console.log("[DEBUG] getCurrentUser - user._id:", user._id);
+      console.log("[DEBUG] getCurrentUser - user._id string:", String(user._id));
+    }
+    
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
+};
+
 module.exports = {
-  loginUser
+  loginUser,
+  getCurrentUser
 };

@@ -26,6 +26,45 @@ router.get(
 
 /*
 ====================================
+RECENT ASSIGNED TASKS
+====================================
+*/
+
+router.get(
+  "/recent-tasks",
+  authMiddleware,
+  roleMiddleware("EMPLOYEE"),
+  dashboardController.getRecentAssignedTasks
+);
+
+/*
+====================================
+RECENT COMPLETED WORKS
+====================================
+*/
+
+router.get(
+  "/recent-works",
+  authMiddleware,
+  roleMiddleware("EMPLOYEE"),
+  dashboardController.getRecentCompletedWorks
+);
+
+/*
+====================================
+RECENT ACTIVITY
+====================================
+*/
+
+router.get(
+  "/recent-activity",
+  authMiddleware,
+  roleMiddleware("EMPLOYEE"),
+  dashboardController.getRecentActivity
+);
+
+/*
+====================================
 ASSIGNED TASKS
 ====================================
 */

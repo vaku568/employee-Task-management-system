@@ -80,6 +80,20 @@ router.get(
   solutionController.getMyHistory
 );
 
+router.get(
+  "/my-reviewed",
+  authMiddleware,
+  roleMiddleware("EMPLOYEE"),
+  solutionController.getMyReviewedSolutions
+);
+
+router.get(
+  "/my-repository",
+  authMiddleware,
+  roleMiddleware("EMPLOYEE"),
+  solutionController.getMyRepository
+);
+
 /*
 ====================================
 TEAM LEAD REPOSITORIES

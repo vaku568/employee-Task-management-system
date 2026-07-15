@@ -60,6 +60,31 @@ const userSchema = new mongoose.Schema(
         "WRITING"
       ],
       required: true
+    },
+
+    // Additional profile fields
+    phoneNumber: {
+      type: String,
+      trim: true
+    },
+
+    department: {
+      type: String,
+      trim: true
+    },
+
+    designation: {
+      type: String,
+      trim: true
+    },
+
+    profilePhoto: {
+      type: String,
+      trim: true
+    },
+
+    joiningDate: {
+      type: Date
     }
   },
   {

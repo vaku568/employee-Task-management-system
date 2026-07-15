@@ -12,6 +12,8 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  Button,
+  Skeleton,
 } from "@mui/material";
 
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
@@ -19,6 +21,8 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
+import PersonOffRoundedIcon from "@mui/icons-material/PersonOffRounded";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -41,6 +45,11 @@ const EmployeeTable = ({
     onApprove,
     onReject,
     onView,
+    onEdit,
+    onDelete,
+    currentUserId,
+    onRefresh,
+    loading,
 }) => {
   return (
     <TableContainer
@@ -109,20 +118,87 @@ const EmployeeTable = ({
 
         <TableBody>
 
-          {employees.length === 0 ? (
+          {loading ? (
+            // Skeleton loader
+            Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={`skeleton-${index}`}>
+                <TableCell>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Skeleton variant="circular" width={40} height={40} />
+                    <Box sx={{ width: "100%" }}>
+                      <Skeleton variant="text" width={120} height={20} />
+                      <Skeleton variant="text" width={180} height={16} />
+                    </Box>
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="text" width={100} height={20} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="rectangular" width={80} height={24} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="text" width={100} height={20} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="rectangular" width={80} height={24} />
+                </TableCell>
+                <TableCell align="center">
+                  <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+                    <Skeleton variant="circular" width={32} height={32} />
+                    <Skeleton variant="circular" width={32} height={32} />
+                    <Skeleton variant="circular" width={32} height={32} />
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : employees.length === 0 ? (
             <TableRow>
 
               <TableCell
                 colSpan={6}
                 align="center"
               >
-                <Typography
+                <Box
                   sx={{
-                    py: 5,
+                    py: 8,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 2,
                   }}
                 >
-                  No employees found.
-                </Typography>
+                  <PersonOffRoundedIcon
+                    sx={{
+                      fontSize: 80,
+                      color: "rgba(255, 255, 255, 0.3)",
+                    }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.7)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    No employees found
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    startIcon={<RefreshRoundedIcon />}
+                    onClick={onRefresh}
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.9)",
+                      borderColor: "rgba(255, 255, 255, 0.3)",
+                      "&:hover": {
+                        borderColor: "rgba(255, 255, 255, 0.5)",
+                        bgcolor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                  >
+                    Refresh
+                  </Button>
+                </Box>
 
               </TableCell>
 
@@ -147,7 +223,7 @@ const EmployeeTable = ({
                 >
                   {/* Employee */}
 
-                  <TableCell>
+                  <TableCell sx={{ minWidth: 250 }}>
 
                     <Box
                       display="flex"
@@ -165,12 +241,13 @@ const EmployeeTable = ({
                           .toUpperCase()}
                       </Avatar>
 
-                      <Box>
+                      <Box sx={{ minWidth: 0 }}>
 
                         <Typography
                           fontWeight={
                             600
                           }
+                          noWrap
                         >
                           {
                             employee.name
@@ -180,6 +257,10 @@ const EmployeeTable = ({
                         <Typography
                           variant="caption"
                           color="text.secondary"
+                          sx={{
+                            wordBreak: "break-all",
+                            display: "block",
+                          }}
                         >
                           {
                             employee.email
@@ -294,10 +375,17 @@ const EmployeeTable = ({
                       </>
                     )}
 
-                    <Tooltip title="Edit">
+                    <Tooltip title="Edit Employee">
 
                       <IconButton
                         color="primary"
+                        onClick={() => onEdit(employee)}
+                        sx={{
+                          transition: "transform 0.2s",
+                          "&:hover": {
+                            transform: "scale(1.2)",
+                          },
+                        }}
                       >
                         <EditRoundedIcon />
 
@@ -305,10 +393,21 @@ const EmployeeTable = ({
 
                     </Tooltip>
 
-                    <Tooltip title="Delete">
+                    <Tooltip title="Delete Employee">
 
                       <IconButton
                         color="error"
+                        onClick={() => onDelete(employee)}
+                        disabled={currentUserId === employee._id}
+                        sx={{
+                          transition: "transform 0.2s",
+                          "&:hover": {
+                            transform: "scale(1.2)",
+                          },
+                          "&:disabled": {
+                            opacity: 0.3,
+                          },
+                        }}
                       >
                         <DeleteRoundedIcon />
 

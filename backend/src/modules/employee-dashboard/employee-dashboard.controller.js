@@ -25,6 +25,78 @@ const getEmployeeDashboard =
 
   };
 
+const getRecentAssignedTasks =
+  async (req, res) => {
+
+    try {
+
+      const tasks =
+        await dashboardService.getRecentAssignedTasks(
+          req.user.id
+        );
+
+      res.status(200).json(
+        tasks
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        message: error.message
+      });
+
+    }
+
+  };
+
+const getRecentCompletedWorks =
+  async (req, res) => {
+
+    try {
+
+      const works =
+        await dashboardService.getRecentCompletedWorks(
+          req.user.id
+        );
+
+      res.status(200).json(
+        works
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        message: error.message
+      });
+
+    }
+
+  };
+
+const getRecentActivity =
+  async (req, res) => {
+
+    try {
+
+      const activities =
+        await dashboardService.getRecentActivity(
+          req.user.id
+        );
+
+      res.status(200).json(
+        activities
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        message: error.message
+      });
+
+    }
+
+  };
+
 const getAssignedTasks =
   async (req, res) => {
 
@@ -82,6 +154,9 @@ const acceptTask =
 
 module.exports = {
   getEmployeeDashboard,
+  getRecentAssignedTasks,
+  getRecentCompletedWorks,
+  getRecentActivity,
   getAssignedTasks,
   acceptTask
 };

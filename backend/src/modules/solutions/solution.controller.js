@@ -333,6 +333,50 @@ const getMyHistory = async (req, res) => {
   }
 };
 
+const getMyReviewedSolutions = async (req, res) => {
+  try {
+    console.log("[DEBUG] getMyReviewedSolutions - Logged-in Employee ID:", req.user.id);
+    const solutions =
+      await solutionService.getMyReviewedSolutions(
+        req.user.id
+      );
+    console.log("[DEBUG] getMyReviewedSolutions - Solutions found:", solutions.length);
+    console.log("[DEBUG] getMyReviewedSolutions - Solutions data:", JSON.stringify(solutions, null, 2));
+
+    res.status(200).json(solutions);
+  } catch (error) {
+    console.error("[ERROR] getMyReviewedSolutions:", error);
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
+const getMyRepository = async (req, res) => {
+  try {
+    console.log("[DEBUG] getMyRepository - Full req.user object:", JSON.stringify(req.user, null, 2));
+    console.log("[DEBUG] getMyRepository - Logged-in Employee ID (req.user.id):", req.user.id);
+    console.log("[DEBUG] getMyRepository - Logged-in Employee ID (req.user._id):", req.user._id);
+
+    const userId = req.user.id || req.user._id;
+    console.log("[DEBUG] getMyRepository - Using userId:", userId);
+
+    const solutions =
+      await solutionService.getMyRepository(
+        userId
+      );
+    console.log("[DEBUG] getMyRepository - Solutions found:", solutions.length);
+    console.log("[DEBUG] getMyRepository - Solutions data:", JSON.stringify(solutions, null, 2));
+
+    res.status(200).json(solutions);
+  } catch (error) {
+    console.error("[ERROR] getMyRepository:", error);
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
 /*
 ====================================
 REWORK REPOSITORY
@@ -378,6 +422,8 @@ module.exports = {
   getMyApprovedSolutions,
   getMyReworkSolutions,
   getMyHistory,
+  getMyReviewedSolutions,
+  getMyRepository,
   getLatestSolutionByTaskId,
   getApprovedRepository,
   getReworkRepository,

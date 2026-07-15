@@ -4,6 +4,7 @@ const PageHeader = ({
   title,
   subtitle,
   action = null,
+  showLogo = true,
 }) => {
   return (
     <Box
@@ -62,11 +63,23 @@ const PageHeader = ({
 
       {/* Right */}
 
-      {action && (
-        <Box>
-          {action}
-        </Box>
-      )}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {action && (
+          <Box>
+            {action}
+          </Box>
+        )}
+        {showLogo && (
+          <Box
+            component="img"
+            src="/logos/company_logos.png"
+            alt="Company Logo"
+            sx={{
+              height: 36,
+            }}
+          />
+        )}
+      </Box>
     </Box>
   );
 };

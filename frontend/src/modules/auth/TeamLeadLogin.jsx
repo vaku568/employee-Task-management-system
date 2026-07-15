@@ -27,8 +27,6 @@ import {
   useNavigate
 } from "react-router-dom";
 
-import Navbar from "../../components/layout/Navbar"
-
 import axiosInstance from "../../services/axiosInstance";
 
 const TeamLeadLogin = () => {
@@ -59,6 +57,7 @@ const TeamLeadLogin = () => {
 
         setError("");
 
+        console.log("[DEBUG] TeamLeadLogin - Calling login API with:", { email });
         const response =
           await axiosInstance.post(
             "/auth/login",
@@ -67,18 +66,26 @@ const TeamLeadLogin = () => {
               password
             }
           );
+        console.log("[DEBUG] TeamLeadLogin - Login response received:", response.status);
+        console.log("[DEBUG] TeamLeadLogin - Response data:", response.data);
+        console.log("[DEBUG] TeamLeadLogin - Response data.token:", response.data.token);
+        console.log("[DEBUG] TeamLeadLogin - Response data.user:", response.data.user);
 
+        console.log("[DEBUG] TeamLeadLogin - Storing token in localStorage");
         localStorage.setItem(
           "token",
           response.data.token
         );
+        console.log("[DEBUG] TeamLeadLogin - Token stored:", localStorage.getItem("token") ? "EXISTS" : "MISSING");
 
+        console.log("[DEBUG] TeamLeadLogin - Storing user in localStorage");
         localStorage.setItem(
           "user",
           JSON.stringify(
             response.data.user
           )
         );
+        console.log("[DEBUG] TeamLeadLogin - User stored:", localStorage.getItem("user") ? "EXISTS" : "MISSING");
 
         navigate(
           "/teamlead/dashboard"
@@ -132,7 +139,6 @@ const TeamLeadLogin = () => {
   return (
 
   <>
-    <Navbar />
 
     <Box
       sx={{

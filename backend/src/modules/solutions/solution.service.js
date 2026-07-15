@@ -7,6 +7,9 @@ const Task =
 const User =
   require("../../models/User");
 
+const notificationService = require("../notifications/notification.service");
+const mongoose = require("mongoose");
+
 /*
 ====================================
 CREATE SOLUTION
@@ -16,28 +19,45 @@ CREATE SOLUTION
 const createSolution =
   async (solutionData, employeeId) => {
 
+    // Convert string ID to ObjectId if necessary
+    const employeeObjectId = typeof employeeId === 'string' ? new mongoose.Types.ObjectId(employeeId) : employeeId;
+    const taskObjectId = typeof solutionData.taskId === 'string' ? new mongoose.Types.ObjectId(solutionData.taskId) : solutionData.taskId;
+
     const solution =
       await Solution.create({
         ...solutionData,
-        employeeId,
+        employeeId: employeeObjectId,
+        taskId: taskObjectId,
         reviewStatus: "PENDING"
       });
 
-    const taskStatus =
-      solutionData.solutionType === "FINAL"
-        ? "FINAL"
-        : "PARAPHRASE";
-
     await Task.findByIdAndUpdate(
-      solutionData.taskId,
+      taskObjectId,
       {
-        status: taskStatus,
+        status: "PENDING_REVIEW",
         submittedAt: new Date()
       },
       {
         new: true
       }
     );
+
+    // Get task to find team lead
+    const task = await Task.findById(taskObjectId);
+    
+    // Create notification for the team lead
+    try {
+      await notificationService.createNotification(
+        employeeObjectId,
+        task.assignedBy,
+        "Solution Submitted",
+        "An employee has submitted a solution for review.",
+        "SOLUTION_SUBMITTED",
+        solution._id
+      );
+    } catch (notificationError) {
+      console.error("Error creating notification:", notificationError);
+    }
 
     return solution;
   };
@@ -219,6 +239,20 @@ const approveSolution =
       throw new Error("Original task not found");
     }
 
+    // Create notification for the employee
+    try {
+      await notificationService.createNotification(
+        task.assignedBy,
+        solution.employeeId,
+        "Solution Approved",
+        "Your solution has been approved.",
+        "SOLUTION_APPROVED",
+        solution._id
+      );
+    } catch (notificationError) {
+      console.error("Error creating notification:", notificationError);
+    }
+
     if (solution.solutionType === "PARAPHRASE") {
       const writingUser =
         await User.findOne({
@@ -274,13 +308,30 @@ const reworkSolution =
       );
     }
 
-    await Task.findByIdAndUpdate(
+    const task = await Task.findByIdAndUpdate(
       solution.taskId,
       {
         status: "REWORK",
         reviewedAt: new Date()
+      },
+      {
+        new: true
       }
     );
+
+    // Create notification for the employee
+    try {
+      await notificationService.createNotification(
+        task.assignedBy,
+        solution.employeeId,
+        "Solution Rework Required",
+        "Your solution requires rework. Please review and resubmit.",
+        "SOLUTION_REWORK",
+        solution._id
+      );
+    } catch (notificationError) {
+      console.error("Error creating notification:", notificationError);
+    }
 
     return solution;
   };
@@ -348,6 +399,55 @@ const getMyHistory = async (employeeId) => {
     .sort({ createdAt: -1 });
 };
 
+const getMyReviewedSolutions = async (employeeId) => {
+  console.log("[DEBUG] getMyReviewedSolutions - Searching for employeeId:", employeeId);
+  console.log("[DEBUG] getMyReviewedSolutions - Filter: reviewStatus = APPROVED");
+
+  const solutions = await Solution.find({
+    employeeId,
+    reviewStatus: "APPROVED"
+  })
+    .populate("employeeId", "name email employeeId team")
+    .populate("taskId", "studentName university moduleCode description status uploadedFile uploadedFiles")
+    .sort({ reviewedAt: -1 });
+
+  console.log("[DEBUG] getMyReviewedSolutions - Found solutions:", solutions.length);
+  if (solutions.length > 0) {
+    console.log("[DEBUG] getMyReviewedSolutions - First solution:", JSON.stringify(solutions[0], null, 2));
+  }
+
+  return solutions;
+};
+
+const getMyRepository = async (employeeId) => {
+  console.log("[DEBUG] getMyRepository - Searching for employeeId:", employeeId);
+  console.log("[DEBUG] getMyRepository - Filter: reviewStatus in [APPROVED, REWORK]");
+
+  // First, try without reviewStatus filter to see if employeeId matches
+  const allEmployeeSolutions = await Solution.find({
+    employeeId
+  });
+  console.log("[DEBUG] getMyRepository - ALL solutions for this employee (no status filter):", allEmployeeSolutions.length);
+
+  const solutions = await Solution.find({
+    employeeId,
+    reviewStatus: { $in: ["APPROVED", "REWORK"] }
+  })
+    .populate("employeeId", "name email employeeId team")
+    .populate("taskId", "studentName university moduleCode description status uploadedFile uploadedFiles")
+    .sort({ reviewedAt: -1 });
+
+  console.log("[DEBUG] getMyRepository - Found solutions with APPROVED/REWORK:", solutions.length);
+  if (solutions.length > 0) {
+    console.log("[DEBUG] getMyRepository - First solution:", JSON.stringify(solutions[0], null, 2));
+  } else if (allEmployeeSolutions.length > 0) {
+    console.log("[DEBUG] getMyRepository - Employee has solutions but none with APPROVED/REWORK status");
+    console.log("[DEBUG] getMyRepository - Sample solution statuses:", allEmployeeSolutions.map(s => s.reviewStatus));
+  }
+
+  return solutions;
+};
+
 const getReworkRepository = async () => {
   return await Solution.find({
     reviewStatus: "REWORK"
@@ -382,6 +482,8 @@ module.exports = {
   getMyApprovedSolutions,
   getMyReworkSolutions,
   getMyHistory,
+  getMyReviewedSolutions,
+  getMyRepository,
   getReworkRepository,
   getHistoryRepository,
   getSolutionById

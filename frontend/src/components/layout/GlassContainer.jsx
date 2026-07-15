@@ -20,12 +20,12 @@ const GlassContainer = ({
         WebkitBackdropFilter: "blur(18px)",
 
         background:
-          "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08))",
+          "linear-gradient(135deg, rgba(255,255,255,0.32), rgba(255,255,255,0.22))",
 
-        border: "1px solid rgba(255,255,255,0.18)",
+        border: "1px solid rgba(255,255,255,0.38)",
 
         boxShadow:
-          "0 10px 35px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,.15)",
+          "0 10px 35px rgba(0,0,0,0.22), inset 0 1px 1px rgba(255,255,255,.25)",
 
         transition: "all .35s ease",
 
@@ -35,9 +35,9 @@ const GlassContainer = ({
           transform: "translateY(-3px)",
 
           boxShadow:
-            "0 18px 45px rgba(0,0,0,.25), inset 0 1px 1px rgba(255,255,255,.18)",
+            "0 18px 45px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.3)",
 
-          border: "1px solid rgba(255,255,255,.28)",
+          border: "1px solid rgba(255,255,255,.48)",
         },
 
         ...sx,

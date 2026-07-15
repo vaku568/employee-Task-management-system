@@ -27,8 +27,6 @@ import {
   useNavigate
 } from "react-router-dom";
 
-import Navbar from "../../components/layout/Navbar";
-
 import axiosInstance from "../../services/axiosInstance";
 
 const EmployeeLogin = () => {
@@ -59,6 +57,7 @@ const EmployeeLogin = () => {
 
         setError("");
 
+        console.log("[DEBUG] EmployeeLogin - Calling login API with:", { email });
         const response =
           await axiosInstance.post(
             "/auth/login",
@@ -67,29 +66,48 @@ const EmployeeLogin = () => {
               password
             }
           );
+        console.log("[DEBUG] EmployeeLogin - Login response received:", response.status);
+        console.log("[DEBUG] EmployeeLogin - Response data:", response.data);
+        console.log("[DEBUG] EmployeeLogin - Response data.token:", response.data.token);
+        console.log("[DEBUG] EmployeeLogin - Response data.user:", response.data.user);
 
+        // Only save token and user if login is successful (APPROVED)
+        console.log("[DEBUG] EmployeeLogin - Storing token in localStorage");
         localStorage.setItem(
           "token",
           response.data.token
         );
+        console.log("[DEBUG] EmployeeLogin - Token stored:", localStorage.getItem("token") ? "EXISTS" : "MISSING");
 
+        console.log("[DEBUG] EmployeeLogin - Storing user in localStorage");
         localStorage.setItem(
           "user",
           JSON.stringify(
             response.data.user
           )
         );
+        console.log("[DEBUG] EmployeeLogin - User stored:", localStorage.getItem("user") ? "EXISTS" : "MISSING");
 
-        navigate(
-          "/employee/dashboard"
-        );
+        // Redirect to dashboard for approved employees
+        navigate("/employee/dashboard");
 
       } catch (err) {
 
-        setError(
-          err.response?.data?.message ||
-          "Login Failed"
-        );
+        const errorMessage = err.response?.data?.message || "Login Failed";
+        const status = err.response?.status;
+
+        if (status === 403) {
+          // Account pending or rejected - show waiting/rejected page
+          if (errorMessage.includes("waiting")) {
+            navigate("/waiting-for-approval");
+          } else if (errorMessage.includes("rejected")) {
+            navigate("/registration-rejected");
+          } else {
+            setError(errorMessage);
+          }
+        } else {
+          setError(errorMessage);
+        }
 
       }
 
@@ -97,8 +115,6 @@ const EmployeeLogin = () => {
 
   return (
     <>
-      <Navbar />
-
        <Box
   sx={{
     minHeight: "90vh",

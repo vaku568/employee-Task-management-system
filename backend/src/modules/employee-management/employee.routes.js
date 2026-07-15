@@ -41,6 +41,13 @@ router.get(
 );
 
 router.get(
+  "/approved",
+  authMiddleware,
+  roleMiddleware("TEAM_LEAD"),
+  employeeController.getApprovedEmployees
+);
+
+router.get(
   "/pending",
   authMiddleware,
   roleMiddleware("TEAM_LEAD"),
@@ -66,6 +73,20 @@ router.put(
   authMiddleware,
   roleMiddleware("TEAM_LEAD"),
   employeeController.rejectEmployee
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("TEAM_LEAD"),
+  employeeController.deleteEmployee
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("TEAM_LEAD"),
+  employeeController.updateEmployee
 );
 
 module.exports = router;

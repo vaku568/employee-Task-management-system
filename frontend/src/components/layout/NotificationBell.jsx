@@ -1,10 +1,10 @@
 import { Badge, Box, IconButton, Tooltip } from "@mui/material";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
+import { useNotification } from "../../contexts/NotificationContext";
 
-const NotificationBell = ({
-  count = 0,
-  onClick,
-}) => {
+const NotificationBell = ({ onClick }) => {
+  const { unreadCount } = useNotification();
+
   return (
     <Tooltip title="Notifications" arrow>
       <IconButton
@@ -40,10 +40,10 @@ const NotificationBell = ({
         }}
       >
         <Badge
-          badgeContent={count}
+          badgeContent={unreadCount}
           color="error"
           overlap="circular"
-          invisible={count === 0}
+          invisible={unreadCount === 0}
           sx={{
             "& .MuiBadge-badge": {
               fontWeight: 700,
@@ -60,7 +60,7 @@ const NotificationBell = ({
               justifyContent: "center",
 
               animation:
-                count > 0 ? "notificationRing 1.8s infinite" : "none",
+                unreadCount > 0 ? "notificationRing 1.8s infinite" : "none",
 
               "@keyframes notificationRing": {
                 "0%": {

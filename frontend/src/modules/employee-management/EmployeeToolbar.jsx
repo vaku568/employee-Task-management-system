@@ -22,6 +22,7 @@ const EmployeeToolbar = ({
   setStatusFilter,
   onRefresh,
   onAddEmployee,
+  teams = [],
 }) => {
   return (
     <Box
@@ -99,25 +100,11 @@ const EmployeeToolbar = ({
               All Teams
             </MenuItem>
 
-            <MenuItem value="ML">
-              Machine Learning
-            </MenuItem>
-
-            <MenuItem value="DB">
-              Database
-            </MenuItem>
-
-            <MenuItem value="CYBER">
-              Cyber Security
-            </MenuItem>
-
-            <MenuItem value="GEN">
-              General
-            </MenuItem>
-
-            <MenuItem value="WRITING">
-              Writing
-            </MenuItem>
+            {teams.map((team) => (
+              <MenuItem key={team} value={team}>
+                {team}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
